@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class Piece : MonoBehaviour
 {
+    private AudioSource _source;
+    [SerializeField] private AudioClip _movePiece;
+    [SerializeField] private AudioClip _pieceLand;
+    [SerializeField] private AudioClip _rotatePiece;
+    
     public Board board {get; private set;}
     public TetrominoData data {get; private set;}
     public Vector3Int[] cells {get; private set;}
@@ -10,10 +15,13 @@ public class Piece : MonoBehaviour
     public int rotationIndex {get; private set;}
 
     public float stepDelay = 1f;
-    public float lockDelay = 0.5f;
+    public float lockDelay = 0.3f;
 
     private float stepTime;
     private float lockTime;
+    
+    private float _movementInterval = 0.15f;
+    private float _movementTimer = 0.0f;
     
 
     public void Initialize(Board board, Vector3Int position, TetrominoData data)
@@ -36,37 +44,47 @@ public class Piece : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _source = GetComponent<AudioSource>();
+    }
     private void Update()
     {
         board.Clear(this);
         
         lockTime += Time.deltaTime;
+        
+        bool _isMoving = Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.S);
+
+        if (GameBehavior.Instance.GameMode == Utilities.GameState.Play)
+        {
+
+        HandleMoveInputs();
+        
+        if (_isMoving)
+        {
+            _source.PlayOneShot(_movePiece);
+        }
+
+        if (_movementTimer < _movementInterval)
+        {
+            _movementTimer += Time.deltaTime;
+        }
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
+            _source.PlayOneShot(_rotatePiece);
             Rotate(-1);
         }
         else if (Input.GetKeyDown(KeyCode.E))
         {
+            _source.PlayOneShot(_rotatePiece);
             Rotate(1);
         }
         
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Move(Vector2Int.left);
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            Move(Vector2Int.right);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Move(Vector2Int.down);
-        }
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            _source.PlayOneShot(_pieceLand);
             HardDrop();
         }
 
@@ -76,6 +94,30 @@ public class Piece : MonoBehaviour
         }
 
         board.Set(this);
+        }
+    }
+
+    public void HandleMoveInputs()
+    {
+        
+        if (_movementTimer < _movementInterval)
+        {
+            return;
+        }
+        
+        if (Input.GetKey(KeyCode.A))
+        {
+            Move(Vector2Int.left);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            Move(Vector2Int.right);
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            Move(Vector2Int.down);
+        }
     }
 
     private void Step()
@@ -119,6 +161,7 @@ public class Piece : MonoBehaviour
         {
             position = newPosition;
             lockTime = 0f;
+            _movementTimer = 0f;
         }
 
         return valid;

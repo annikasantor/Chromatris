@@ -1,13 +1,38 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
+using TMPro;
+using Random = UnityEngine.Random;
 
 public class Board : MonoBehaviour
 {
+    
+    private AudioSource _source;
+    [SerializeField] private AudioClip _lineClear;
+    [SerializeField] private AudioClip _gameOver;
+    
     public Tilemap tilemap { get; private set; }
     public Piece activePiece { get; private set; }
+   
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPosition = new Vector3Int(-1, 8, 0);
     public Vector2Int boardSize = new Vector2Int(10, 20);
+    
+    private Utilities.GameState _gameMode;
+    
+    [SerializeField] private TMP_Text _pauseUI;
+
+    public Utilities.GameState GameMode
+    {
+        get => _gameMode;
+
+        set
+        {
+            _gameMode = value;
+            _pauseUI.enabled = GameMode == Utilities.GameState.Pause;
+        }
+    }
 
     public RectInt Bounds
     {
@@ -31,6 +56,10 @@ public class Board : MonoBehaviour
 
     private void Start()
     {
+        GameMode = Utilities.GameState.Play;
+        
+        _source = GetComponent<AudioSource>();
+        
         SpawnPiece();
     }
 
@@ -38,12 +67,12 @@ public class Board : MonoBehaviour
     {
         int random = Random.Range(0, tetrominos.Length);
         TetrominoData data = tetrominos[random];
-        
+
         activePiece.Initialize(this, spawnPosition, data);
 
         if (IsValidPosition(activePiece, spawnPosition))
         {
-            Set(activePiece);
+             Set(activePiece);
         }
         else
         {
@@ -52,10 +81,14 @@ public class Board : MonoBehaviour
 
         Set(activePiece);
     }
-
+    
     private void GameOver()
     {
         tilemap.ClearAllTiles();
+        
+        _source.PlayOneShot(_gameOver);
+        
+        SceneManager.LoadScene("GameOver");
     }
     
     
@@ -109,6 +142,8 @@ public class Board : MonoBehaviour
             if (IsLineFull(row))
             {
                 LineClear(row);
+                ScoreManager.instance.AddScore();
+                _source.PlayOneShot(_lineClear);
             }
             else
             {
@@ -116,7 +151,7 @@ public class Board : MonoBehaviour
             }
         }
     }
-
+    
     private bool IsLineFull(int row)
     {
         RectInt bounds = Bounds;
