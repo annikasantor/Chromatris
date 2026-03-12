@@ -14,11 +14,12 @@ public class Piece : MonoBehaviour
     public Vector3Int position {get; private set;}
     public int rotationIndex {get; private set;}
 
-    public float stepDelay = 1f;
+    public float stepTime = 1f;
     public float lockDelay = 0.3f;
-
-    private float stepTime;
+    
     private float lockTime;
+
+    private float timer;
     
     private float _movementInterval = 0.15f;
     private float _movementTimer = 0.0f;
@@ -30,7 +31,8 @@ public class Piece : MonoBehaviour
         this.position = position;
         this.data = data;
         rotationIndex = 0;
-        stepTime = Time.time + stepDelay;
+        
+        Debug.Log(stepTime);
         lockTime = 0f;
 
         if (cells == null)
@@ -47,6 +49,7 @@ public class Piece : MonoBehaviour
     private void Start()
     {
         _source = GetComponent<AudioSource>();
+        
     }
     private void Update()
     {
@@ -55,45 +58,58 @@ public class Piece : MonoBehaviour
         lockTime += Time.deltaTime;
         
         bool _isMoving = Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.S);
-
+        
+        if (hasLocked == true)
+        {
+            stepTime *= 0.99f;
+            
+            hasLocked = false;
+            Debug.Log(hasLocked);
+        }
+        
         if (GameBehavior.Instance.GameMode == Utilities.GameState.Play)
         {
 
-        HandleMoveInputs();
-        
-        if (_isMoving)
-        {
-            _source.PlayOneShot(_movePiece);
-        }
+            HandleMoveInputs();
+            
+            if (_isMoving)
+            {
+                _source.PlayOneShot(_movePiece);
+            }
 
-        if (_movementTimer < _movementInterval)
-        {
-            _movementTimer += Time.deltaTime;
-        }
+            if (_movementTimer < _movementInterval)
+            {
+                _movementTimer += Time.deltaTime;
+            }
 
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            _source.PlayOneShot(_rotatePiece);
-            Rotate(-1);
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            _source.PlayOneShot(_rotatePiece);
-            Rotate(1);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _source.PlayOneShot(_pieceLand);
-            HardDrop();
-        }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                _source.PlayOneShot(_rotatePiece);
+                Rotate(-1);
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                _source.PlayOneShot(_rotatePiece);
+                Rotate(1);
+            }
+            
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                _source.PlayOneShot(_pieceLand);
+                HardDrop();
+                hasLocked = true;
+                Debug.Log(hasLocked);
+            }
 
-        if (Time.time >= stepTime)
-        {
-            Step();
-        }
+            if (timer >= stepTime)
+            {
+                Step();
+                timer -= stepTime;
+            }
 
-        board.Set(this);
+            board.Set(this);
+            
+            timer += Time.deltaTime;
         }
     }
 
@@ -122,16 +138,19 @@ public class Piece : MonoBehaviour
 
     private void Step()
     {
-        stepTime = Time.time + stepDelay;
+        //stepTime = Time.time + stepDelay;
 
         Move(Vector2Int.down);
 
         if (lockTime >= lockDelay)
         {
             Lock();
+            hasLocked = true;
+            Debug.Log(hasLocked);
         }
     }
 
+    private bool hasLocked = false;
     private void Lock()
     {
         board.Set(this);

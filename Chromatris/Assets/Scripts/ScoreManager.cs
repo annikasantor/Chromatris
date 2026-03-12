@@ -36,17 +36,7 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.SetInt("highScore", score);
         }
     }
-
-    //private void Update()
-    //{
-    //    int random = Random.Range(0, 100);
-    //    
-    //    if(random == 33)
-    //    {
-    //        CallCoroutine();
-    //    }
-    //}
-
+    
     //public void CallCoroutine()
     //{
     //    if (!_inCoroutine)

@@ -780,7 +780,7 @@ MonoBehaviour:
   _movePiece: {fileID: 8300000, guid: 6f70deca12f944515b44a5ef25789b21, type: 3}
   _pieceLand: {fileID: 8300000, guid: 28b6fc583db654adaa5520ff8aad7a51, type: 3}
   _rotatePiece: {fileID: 8300000, guid: 74f6b0dfed2c3425387ca2ff86953744, type: 3}
-  stepDelay: 1
+  stepTime: 1
   lockDelay: 0.5
 --- !u!82 &795199397
 AudioSource:

@@ -30,7 +30,7 @@ public class Board : MonoBehaviour
         set
         {
             _gameMode = value;
-            _pauseUI.enabled = GameMode == Utilities.GameState.Pause;
+            _pauseUI.enabled = true; //= GameMode == Utilities.GameState.Pause;
         }
     }
 
@@ -62,7 +62,7 @@ public class Board : MonoBehaviour
         
         SpawnPiece();
     }
-
+    
     public void SpawnPiece()
     {
         int random = Random.Range(0, tetrominos.Length);
