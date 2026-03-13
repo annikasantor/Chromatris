@@ -1,5 +1,7 @@
-using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 public class Piece : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class Piece : MonoBehaviour
     [SerializeField] private AudioClip _rotatePiece;
     
     public Board board {get; private set;}
+    public ScoreManager scoreManager {get; private set;}
     public TetrominoData data {get; private set;}
     public Vector3Int[] cells {get; private set;}
     public Vector3Int position {get; private set;}
@@ -18,21 +21,76 @@ public class Piece : MonoBehaviour
     public float lockDelay = 0.3f;
     
     private float lockTime;
+    
+    private bool hasLocked = false;
 
     private float timer;
     
     private float _movementInterval = 0.15f;
     private float _movementTimer = 0.0f;
     
+    public static bool _inCoroutine = false;
 
+    private float _originalStepTime;
+    
+    [SerializeField] private TMP_Text _timeSlowedUI;
+
+    //public static int Score;
+    IEnumerator PowerUp()
+    {
+        //Debug.Log("In coroutine");
+        _inCoroutine = true;
+        //bool addScore = ScoreManager.addScore;
+
+        //if (addScore)
+        //{
+        //    Score++;
+        //}
+        
+        _originalStepTime = stepTime;
+        //Debug.Log(_originalStepTime);
+        stepTime = 10f;
+        _timeSlowedUI.enabled = true;
+        //_countdownText.enabled = true;
+        
+        yield return new WaitForSeconds(10);
+        stepTime = _originalStepTime;
+        _inCoroutine = false;
+        _timeSlowedUI.enabled = false;
+        //_countdownText.enabled = false;
+    }
+
+    private int time;
+
+    //[SerializeField] private TMP_Text _countdownText;
+
+    //private int countdown = 10;
+
+    //public void Countdown()
+   // {
+   //     countdown--;
+   //     _countdownText.text = countdown.ToString();
+
+    //    if (countdown == 0)
+  //      {
+   //         _countdownText.text = 10.ToString();
+   //     }
+   // }
+    
+    
+    
     public void Initialize(Board board, Vector3Int position, TetrominoData data)
     {
         this.board = board;
         this.position = position;
         this.data = data;
         rotationIndex = 0;
-        
-        Debug.Log(stepTime);
+
+        //Score = 0;
+
+        //_countdownText.enabled = false;
+        _timeSlowedUI.enabled = false;
+        //Debug.Log(stepTime);
         lockTime = 0f;
 
         if (cells == null)
@@ -46,10 +104,20 @@ public class Piece : MonoBehaviour
         }
     }
 
+    public void CheckCoroutine()
+    {
+        if (_inCoroutine == false)
+        {
+            //Debug.Log("4 lines cleared");
+            StartCoroutine(PowerUp());
+            //Countdown();
+        }
+    }
+    
     private void Start()
     {
         _source = GetComponent<AudioSource>();
-        
+
     }
     private void Update()
     {
@@ -64,7 +132,7 @@ public class Piece : MonoBehaviour
             stepTime *= 0.99f;
             
             hasLocked = false;
-            Debug.Log(hasLocked);
+            //Debug.Log(hasLocked);
         }
         
         if (GameBehavior.Instance.GameMode == Utilities.GameState.Play)
@@ -98,7 +166,12 @@ public class Piece : MonoBehaviour
                 _source.PlayOneShot(_pieceLand);
                 HardDrop();
                 hasLocked = true;
-                Debug.Log(hasLocked);
+                int linesCleared = Board.linesCleared;
+                if (linesCleared == 4)
+                {
+                    CheckCoroutine(); 
+                }
+                //Debug.Log(hasLocked);
             }
 
             if (timer >= stepTime)
@@ -138,19 +211,16 @@ public class Piece : MonoBehaviour
 
     private void Step()
     {
-        //stepTime = Time.time + stepDelay;
-
         Move(Vector2Int.down);
 
         if (lockTime >= lockDelay)
         {
             Lock();
             hasLocked = true;
-            Debug.Log(hasLocked);
+            CheckCoroutine();
+            //Debug.Log(hasLocked);
         }
     }
-
-    private bool hasLocked = false;
     private void Lock()
     {
         board.Set(this);

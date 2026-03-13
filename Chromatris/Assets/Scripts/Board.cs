@@ -4,6 +4,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using TMPro;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 public class Board : MonoBehaviour
 {
@@ -19,9 +20,13 @@ public class Board : MonoBehaviour
     public Vector3Int spawnPosition = new Vector3Int(-1, 8, 0);
     public Vector2Int boardSize = new Vector2Int(10, 20);
     
+    public static int linesCleared = 0;
+    
     private Utilities.GameState _gameMode;
     
     [SerializeField] private TMP_Text _pauseUI;
+    
+    public Piece piece { get; private set; }
 
     public Utilities.GameState GameMode
     {
@@ -30,7 +35,7 @@ public class Board : MonoBehaviour
         set
         {
             _gameMode = value;
-            _pauseUI.enabled = true; //= GameMode == Utilities.GameState.Pause;
+            _pauseUI.enabled = GameMode == Utilities.GameState.Pause;
         }
     }
 
@@ -168,9 +173,34 @@ public class Board : MonoBehaviour
         return true;
     }
 
+    private void CheckLinesCleared()
+    {
+        bool _inCoroutine = Piece._inCoroutine;
+        
+        if (_inCoroutine == false)
+        {
+            StartCoroutine(ResetLinesCleared());
+            //Debug.Log("Check lines cleared");
+        }
+    }
+
+    IEnumerator ResetLinesCleared()
+    {
+        //Debug.Log("Reset lines cleared");
+        yield return new WaitForSeconds(5);
+        linesCleared = 0;
+    }
+    
     private void LineClear(int row)
     {
         RectInt bounds = Bounds;
+        
+        linesCleared += 1;
+        
+        if (linesCleared == 4)
+        {
+            CheckLinesCleared(); 
+        }
 
         for (int col = Bounds.xMin; col < Bounds.xMax; col++)
         {

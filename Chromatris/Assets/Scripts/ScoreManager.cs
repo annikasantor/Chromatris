@@ -10,10 +10,10 @@ public class ScoreManager : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text highScoreText;
 
-    private int score = 0;
+    public Piece piece;
+
+    public static int score = 0;
     private int highScore = 0;
-    
-    private bool _inCoroutine = false;
 
     private void Awake()
     {
@@ -27,34 +27,20 @@ public class ScoreManager : MonoBehaviour
         highScoreText.text = "HIGHSCORE: " + highScore.ToString();
     }
 
+    //public static bool addScore = false;
     public void AddScore()
     {
+        //int doubleScore = Piece.Score;
+        
+        //addScore = true;
         score++;
+        //score += doubleScore;
         scoreText.text = "SCORE: " + score.ToString();
         if (score > highScore)
         {
             PlayerPrefs.SetInt("highScore", score);
         }
-    }
-    
-    //public void CallCoroutine()
-    //{
-    //    if (!_inCoroutine)
-    //    {
-    //        StartCoroutine(DoubleScore());
-    //    }
-    //}
-    
-    IEnumerator DoubleScore()
-    {
-        while(true)
-        {
-            _inCoroutine = true;
-            
-            score++;
-            
-            _inCoroutine = false;
-        }
+        //addScore = false;
     }
     
     
