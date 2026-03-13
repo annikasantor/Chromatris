@@ -55,8 +55,8 @@ public class Piece : MonoBehaviour
         
         yield return new WaitForSeconds(10);
         stepTime = _originalStepTime;
-        _inCoroutine = false;
         _timeSlowedUI.enabled = false;
+        _inCoroutine = false;
         //_countdownText.enabled = false;
     }
 
@@ -217,7 +217,12 @@ public class Piece : MonoBehaviour
         {
             Lock();
             hasLocked = true;
-            CheckCoroutine();
+            
+            int linesCleared = Board.linesCleared;
+            if (linesCleared == 4)
+            {
+                CheckCoroutine(); 
+            }
             //Debug.Log(hasLocked);
         }
     }

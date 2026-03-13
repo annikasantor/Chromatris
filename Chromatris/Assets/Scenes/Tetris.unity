@@ -786,7 +786,6 @@ MonoBehaviour:
   stepTime: 1
   lockDelay: 0.5
   _timeSlowedUI: {fileID: 1286845503}
-  _countdownText: {fileID: 1247984472}
 --- !u!82 &795199397
 AudioSource:
   m_ObjectHideFlags: 0
@@ -992,7 +991,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1247984471
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1171,7 +1170,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'BONUS!!
 
-    DOUBLE POINTS'
+    TIME SLOWED'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
@@ -1198,7 +1197,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.2
+  m_fontSize: 21.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

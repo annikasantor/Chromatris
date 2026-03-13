@@ -187,7 +187,7 @@ public class Board : MonoBehaviour
     IEnumerator ResetLinesCleared()
     {
         //Debug.Log("Reset lines cleared");
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(10);
         linesCleared = 0;
     }
     
