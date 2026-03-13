@@ -65,6 +65,8 @@ public class Board : MonoBehaviour
         
         _source = GetComponent<AudioSource>();
         
+        linesCleared = 0;
+        
         SpawnPiece();
     }
     

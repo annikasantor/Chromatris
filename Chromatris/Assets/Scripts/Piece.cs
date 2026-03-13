@@ -218,11 +218,11 @@ public class Piece : MonoBehaviour
             Lock();
             hasLocked = true;
             
-            int linesCleared = Board.linesCleared;
-            if (linesCleared == 4)
-            {
-                CheckCoroutine(); 
-            }
+            //int linesCleared = Board.linesCleared;
+            //if (linesCleared == 4)
+            //{
+            //    CheckCoroutine(); 
+            //}
             //Debug.Log(hasLocked);
         }
     }
